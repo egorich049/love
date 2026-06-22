@@ -62,26 +62,40 @@ input {
     display: none;
 }
 
-.heart {
-    font-size: 80px;
-    animation: pulse 1s infinite;
+/* ❤️ HEART */
+.final-heart {
+    font-size: 100px;
+    animation: heartPop 1s ease forwards;
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
+@keyframes heartPop {
+    0% { transform: scale(0); opacity: 0; }
+    60% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
-#fireworks {
-    font-size: 60px;
-    animation: boom 1.5s ease-in-out infinite;
+/* 0 FLOAT */
+.zero {
+    position: absolute;
+    font-size: 28px;
+    animation: floatUp 1.2s ease-out forwards;
 }
 
-@keyframes boom {
-    0% { transform: scale(0.5); opacity: 0; }
-    50% { transform: scale(1.5); opacity: 1; }
-    100% { transform: scale(1); opacity: 0.8; }
+@keyframes floatUp {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-200px); opacity: 0; }
+}
+
+/* EXPLOSION */
+.explosion {
+    position: absolute;
+    font-size: 34px;
+    animation: explode 0.7s ease forwards;
+}
+
+@keyframes explode {
+    0% { transform: scale(0.5); opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
 }
 </style>
 </head>
@@ -93,7 +107,7 @@ input {
 <!-- START -->
 <div id="start" class="card">
     <h2>Вітаю вас 💖</h2>
-    <p>Тут ви пройдете міні любовне опитування від вашого коханого.<br>Для цього натисніть "Почати"</p>
+    <p>Тут ви пройдете міні любовне опитування від вашого коханого.</p>
     <button class="btn" onclick="startQuiz()">Почати</button>
 </div>
 
@@ -106,8 +120,8 @@ input {
 
 <!-- Q2 -->
 <div id="q2" class="card hidden">
-    <h2>Подумайте, що ви зараз хотіли б від свого коханого 💭</h2>
-    <input id="wish" placeholder="Ваша відповідь..."/>
+    <h2>Що б ти хотіла від коханого? 💭</h2>
+    <input id="wish" placeholder="Відповідь..."/>
     <br>
     <button class="btn" onclick="checkWish()">Далі</button>
     <button class="btn" onclick="skip2()">Пропустити</button>
@@ -116,29 +130,26 @@ input {
 
 <!-- Q3 -->
 <div id="q3" class="card hidden">
-    <h2>Я тебе люблю!!! ❤️</h2>
+    <h2>Я тебе люблю ❤️</h2>
     <button class="btn" onclick="answer3('я теж')">Я тебе теж</button>
     <button class="btn" onclick="skip3()">Пропустити</button>
 </div>
 
 <!-- RESULT -->
 <div id="result" class="card hidden">
-    <div id="animation"></div>
-    <h2>Дякуємо за ваші відповіді 💖</h2>
-    <p>Ваші бажання будуть враховані)</p>
+    <div id="animation" style="position:relative;height:200px;"></div>
 
-    <h3>📩 Відправте це своєму коханому:</h3>
+    <h2>Дякуємо 💖</h2>
+    <p>Ваші відповіді збережено</p>
+
+    <h3>📩 Результат:</h3>
     <pre id="summary"></pre>
 </div>
 
 </div>
 
 <script>
-let answers = {
-    q1: null,
-    q2: null,
-    q3: null
-};
+let answers = { q1:null, q2:null, q3:null };
 
 function startQuiz(){
     document.getElementById("start").classList.add("hidden");
@@ -155,8 +166,8 @@ function checkWish(){
     let val = document.getElementById("wish").value.trim();
     let err = document.getElementById("error");
 
-    if(val.toLowerCase() === "незнаю" || val.toLowerCase() === "не знаю"){
-        err.innerText = "Подумайте ще 💭";
+    if(val.toLowerCase() === "не знаю" || val.toLowerCase() === "незнаю"){
+        err.innerText = "Подумай ще 💭";
         return;
     }
 
@@ -177,27 +188,49 @@ function nextQ3(){
 
 function answer3(val){
     answers.q3 = val;
-    showResult("kiss");
+    showResult();
 }
 
 function skip3(){
     answers.q3 = "пропущено";
-    showResult("skip");
+    showResult();
 }
 
-function showResult(type){
+function showResult(){
     document.getElementById("q3").classList.add("hidden");
     document.getElementById("result").classList.remove("hidden");
 
     let anim = document.getElementById("animation");
+    anim.innerHTML = "";
 
-    if(answers.q1 === "так"){
-        anim.innerHTML = "<div class='heart'>💋 0</div>";
+    // 🔹 STEP 1: 0 летять вгору
+    for(let i=0;i<12;i++){
+        let zero = document.createElement("div");
+        zero.className = "zero";
+        zero.innerText = "0";
+        zero.style.left = Math.random()*90 + "%";
+        zero.style.top = "120px";
+        anim.appendChild(zero);
     }
 
-    if(answers.q3 === "я теж"){
-        anim.innerHTML = "<div id='fireworks'>🎆💥💖</div>";
-    }
+    // 🔹 STEP 2: вибух
+    setTimeout(() => {
+        anim.innerHTML = "";
+
+        for(let i=0;i<18;i++){
+            let boom = document.createElement("div");
+            boom.className = "explosion";
+            boom.innerText = "0";
+            boom.style.left = Math.random()*90 + "%";
+            boom.style.top = Math.random()*120 + "px";
+            anim.appendChild(boom);
+        }
+    }, 1200);
+
+    // 🔹 STEP 3: серце
+    setTimeout(() => {
+        anim.innerHTML = "<div class='final-heart'>💖</div>";
+    }, 2000);
 
     let text =
 `1) Поцілунок: ${answers.q1}
@@ -205,8 +238,6 @@ function showResult(type){
 3) Любов: ${answers.q3}`;
 
     document.getElementById("summary").innerText = text;
-
-    // зберегти щоб ти міг потім подивитись
     localStorage.setItem("loveQuiz", text);
 }
 </script>
