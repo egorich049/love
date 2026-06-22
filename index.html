@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Міні любовне опитування</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ff4d6d, #ffb3c1);
+    color: white;
+    text-align: center;
+}
+
+.container {
+    padding: 30px;
+}
+
+.card {
+    background: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 20px;
+    max-width: 500px;
+    margin: auto;
+    margin-top: 50px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn {
+    background: white;
+    color: #ff4d6d;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background: #ffe3ea;
+}
+
+input {
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    width: 80%;
+}
+
+.error {
+    color: yellow;
+    margin-top: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+.heart {
+    font-size: 80px;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+#fireworks {
+    font-size: 60px;
+    animation: boom 1.5s ease-in-out infinite;
+}
+
+@keyframes boom {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.5); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- START -->
+<div id="start" class="card">
+    <h2>Вітаю вас 💖</h2>
+    <p>Тут ви пройдете міні любовне опитування від вашого коханого.<br>Для цього натисніть "Почати"</p>
+    <button class="btn" onclick="startQuiz()">Почати</button>
+</div>
+
+<!-- Q1 -->
+<div id="q1" class="card hidden">
+    <h2>Чи хочете ви отримати поцілуночок? 💋</h2>
+    <button class="btn" onclick="answer1('так')">Так</button>
+    <button class="btn" onclick="answer1('ні')">Ні</button>
+</div>
+
+<!-- Q2 -->
+<div id="q2" class="card hidden">
+    <h2>Подумайте, що ви зараз хотіли б від свого коханого 💭</h2>
+    <input id="wish" placeholder="Ваша відповідь..."/>
+    <br>
+    <button class="btn" onclick="checkWish()">Далі</button>
+    <button class="btn" onclick="skip2()">Пропустити</button>
+    <div id="error" class="error"></div>
+</div>
+
+<!-- Q3 -->
+<div id="q3" class="card hidden">
+    <h2>Я тебе люблю!!! ❤️</h2>
+    <button class="btn" onclick="answer3('я теж')">Я тебе теж</button>
+    <button class="btn" onclick="skip3()">Пропустити</button>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="card hidden">
+    <div id="animation"></div>
+    <h2>Дякуємо за ваші відповіді 💖</h2>
+    <p>Ваші бажання будуть враховані)</p>
+
+    <h3>📩 Відправте це своєму коханому:</h3>
+    <pre id="summary"></pre>
+</div>
+
+</div>
+
+<script>
+let answers = {
+    q1: null,
+    q2: null,
+    q3: null
+};
+
+function startQuiz(){
+    document.getElementById("start").classList.add("hidden");
+    document.getElementById("q1").classList.remove("hidden");
+}
+
+function answer1(val){
+    answers.q1 = val;
+    document.getElementById("q1").classList.add("hidden");
+    document.getElementById("q2").classList.remove("hidden");
+}
+
+function checkWish(){
+    let val = document.getElementById("wish").value.trim();
+    let err = document.getElementById("error");
+
+    if(val.toLowerCase() === "незнаю" || val.toLowerCase() === "не знаю"){
+        err.innerText = "Подумайте ще 💭";
+        return;
+    }
+
+    answers.q2 = val;
+    err.innerText = "";
+    nextQ3();
+}
+
+function skip2(){
+    answers.q2 = "пропущено";
+    nextQ3();
+}
+
+function nextQ3(){
+    document.getElementById("q2").classList.add("hidden");
+    document.getElementById("q3").classList.remove("hidden");
+}
+
+function answer3(val){
+    answers.q3 = val;
+    showResult("kiss");
+}
+
+function skip3(){
+    answers.q3 = "пропущено";
+    showResult("skip");
+}
+
+function showResult(type){
+    document.getElementById("q3").classList.add("hidden");
+    document.getElementById("result").classList.remove("hidden");
+
+    let anim = document.getElementById("animation");
+
+    if(answers.q1 === "так"){
+        anim.innerHTML = "<div class='heart'>💋 0</div>";
+    }
+
+    if(answers.q3 === "я теж"){
+        anim.innerHTML = "<div id='fireworks'>🎆💥💖</div>";
+    }
+
+    let text =
+`1) Поцілунок: ${answers.q1}
+2) Бажання: ${answers.q2}
+3) Любов: ${answers.q3}`;
+
+    document.getElementById("summary").innerText = text;
+
+    // зберегти щоб ти міг потім подивитись
+    localStorage.setItem("loveQuiz", text);
+}
+</script>
+
+</body>
+</html>
